@@ -71,6 +71,19 @@ class App extends React.Component<Inico_prop,Inico>{
             },'https://embed.nicovideo.jp');
         }
     }
+    music(joken:string){
+        if(joken=="next"){
+        this.music_index++;
+        this.music_index%=100;
+        }
+        else{
+            this.music_index--;
+            if(this.music_index==-1){
+                this.music_index=99;
+            }
+        }
+        this.setState((prevState)=>({url:this.state.rank_url[this.music_index]}));
+    }
     render() {
         return (
             <div className="App">
@@ -88,6 +101,8 @@ class App extends React.Component<Inico_prop,Inico>{
                     this.handler = e
                 }}>hello
                 </iframe>
+                <Button onClick={()=>{this.music("next")}}>NEXT</Button>
+                <Button onClick={()=>{this.music("prev")}}>PREV</Button>
                 <Typography>
                 <div>{this.music_index + 1}位の楽曲</div>
                 <div>{this.state.rank_title[this.music_index]}</div>
