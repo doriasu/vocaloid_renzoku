@@ -1,9 +1,11 @@
 import React from 'react';
 import {Button} from "@material-ui/core";
+import axios from "axios"
 interface Inico{
     url:string;
     id:string;
-    handler:HTMLIFrameElement|null;
+    rank_url:string[];
+    rank_title:string[];
 }
 interface Inico_prop {
 
@@ -11,17 +13,23 @@ interface Inico_prop {
 class App extends React.Component<Inico_prop,Inico>{
     constructor(props:Inico_prop) {
         super(props);
-        this.state={url:"https://embed.nicovideo.jp/watch/sm37157689?jsapi=1",id:"niconico",handler:null}
+        this.state={url:"",id:"niconico",rank_url:[],rank_title:[]}
         this.bind();
+        this.get_ranking();
 
     }
     private handler:HTMLIFrameElement=document.createElement('iframe');
+    private music_index:number=0;
     wait(): Promise<any> {
         return new Promise(resolve => {
             setTimeout(() => {
                 console.log('wait');
             }, 2000);
         })
+    }
+    async get_ranking(){
+        const res=await axios.get("https://niconico-vocaloid-ranking.herokuapp.com/ranking_api/?ranking");
+        this.setState({rank_url:res.data.url,rank_title:res.data.title,url:res.data.url[0]});
     }
 
 
@@ -31,6 +39,7 @@ class App extends React.Component<Inico_prop,Inico>{
                     console.log("WORLF")
                     if(e.data.data.playerStatus==4){
                         console.log("HELLO")
+                        this.music_index++;
                         this.ch_music();
                         setTimeout(()=>{if(this.handler!==null) {
                             console.log("呼ばれた気がした")
@@ -44,7 +53,7 @@ class App extends React.Component<Inico_prop,Inico>{
 
     }
     ch_music(){
-        this.setState((prevState)=>({url:"https://embed.nicovideo.jp/watch/sm37154099?jsapi=1"}));
+        this.setState((prevState)=>({url:this.state.rank_url[this.music_index]}));
     }
 
     renderPlayer(){
@@ -73,8 +82,9 @@ class App extends React.Component<Inico_prop,Inico>{
         return (
             <div className="App">
                 <header className="App-header">
-                    <Button onClick={()=>this.renderPlayer()}>click</Button>
                     <iframe src={this.state.url} id="nicoplayer" ref={(e:HTMLIFrameElement)=>{this.handler=e}}>hello</iframe>
+                    <div>{this.music_index+1}位の楽曲</div>
+                    <div>{this.state.rank_title[this.music_index]}</div>
                 </header>
             </div>
         );
