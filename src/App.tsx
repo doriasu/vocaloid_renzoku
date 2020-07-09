@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button} from "@material-ui/core";
+import {AppBar, Button, Toolbar, Typography} from "@material-ui/core";
 import axios from "axios"
 interface Inico{
     url:string;
@@ -60,7 +60,7 @@ class App extends React.Component<Inico_prop,Inico>{
         if(this.handler.contentWindow!=null) {
             this.handler.contentWindow.postMessage({
                 sourceConnectorType:1,
-                eventName: 'pause'
+                eventName: 'play'
             }, 'https://embed.nicovideo.jp')
             console.log("pause")
             console.log(this.handler)
@@ -82,11 +82,25 @@ class App extends React.Component<Inico_prop,Inico>{
         return (
             <div className="App">
                 <header className="App-header">
-                    <iframe src={this.state.url} id="nicoplayer" ref={(e:HTMLIFrameElement)=>{this.handler=e}}>hello</iframe>
-                    <div>{this.music_index+1}位の楽曲</div>
-                    <div>{this.state.rank_title[this.music_index]}</div>
+                    <AppBar position="static">
+                        <Toolbar>
+                            <Typography variant="h6">
+                                ボカロランキングを連続再生してみた！
+                            </Typography>
+                        </Toolbar>
+                    </AppBar>
                 </header>
+
+                <iframe src={this.state.url} id="nicoplayer" ref={(e: HTMLIFrameElement) => {
+                    this.handler = e
+                }}>hello
+                </iframe>
+                <Typography>
+                <div>{this.music_index + 1}位の楽曲</div>
+                <div>{this.state.rank_title[this.music_index]}</div>
+                </Typography>
             </div>
+
         );
     }
 }
