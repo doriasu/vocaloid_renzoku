@@ -23,7 +23,6 @@ class App extends React.Component<Inico_prop,Inico>{
     wait(): Promise<any> {
         return new Promise(resolve => {
             setTimeout(() => {
-                console.log('wait');
             }, 2000);
         })
     }
@@ -36,13 +35,10 @@ class App extends React.Component<Inico_prop,Inico>{
     bind() {
         window.addEventListener('message',(e)=>{
                 if(e.data.eventName=="playerStatusChange"){
-                    console.log("WORLF")
                     if(e.data.data.playerStatus==4){
-                        console.log("HELLO")
                         this.music_index++;
                         this.ch_music();
                         setTimeout(()=>{if(this.handler!==null) {
-                            console.log("呼ばれた気がした")
                             this.post_msg(this.handler);
                         }},2000);
 
@@ -62,20 +58,15 @@ class App extends React.Component<Inico_prop,Inico>{
                 sourceConnectorType:1,
                 eventName: 'play'
             }, 'https://embed.nicovideo.jp')
-            console.log("pause")
-            console.log(this.handler)
         }
     }
 
     post_msg=(e:HTMLIFrameElement)=>{
-        console.log("post_msg")
         if(e.contentWindow!==null){
-            console.log("post_msg2")
             let x=e.contentWindow.postMessage({
                 sourceConnectorType:1,
                 eventName: 'play'
             },'https://embed.nicovideo.jp');
-            console.log(x);
         }
     }
     render() {
