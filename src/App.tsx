@@ -1,5 +1,5 @@
 import React from 'react';
-import {AppBar, Button, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, Button, Checkbox, FormControlLabel, Toolbar, Typography} from "@material-ui/core";
 import axios from "axios"
 import {TwitterShareButton,TwitterIcon} from "react-share";
 interface Inico{
@@ -7,6 +7,7 @@ interface Inico{
     id:string;
     rank_url:string[];
     rank_title:string[];
+    random_check:boolean;
 }
 interface Inico_prop {
 
@@ -14,7 +15,7 @@ interface Inico_prop {
 class App extends React.Component<Inico_prop,Inico>{
     constructor(props:Inico_prop) {
         super(props);
-        this.state={url:"",id:"niconico",rank_url:[],rank_title:[]}
+        this.state={url:"",id:"niconico",rank_url:[],rank_title:[],random_check:false}
         this.bind();
         this.get_ranking();
 
@@ -39,6 +40,9 @@ class App extends React.Component<Inico_prop,Inico>{
                     if(e.data.data.playerStatus==4){
                         this.music_index++;
                         this.music_index%=100;
+                        if(this.state.random_check){
+                            this.music_index=Math.floor( Math.random() * (99 + 1 - 0) ) + 0 ;
+                        }
                         this.ch_music();
                         setTimeout(()=>{if(this.handler!==null) {
                             this.post_msg(this.handler);
@@ -101,6 +105,14 @@ class App extends React.Component<Inico_prop,Inico>{
                     this.handler = e
                 }}>hello
                 </iframe>
+                <FormControlLabel
+                    control={<Checkbox
+                        checked={this.state.random_check}
+                        onChange={()=>{this.setState({random_check:!this.state.random_check})}}
+                        name="checkedF"
+                    />}
+                    label="Random"
+                />
                 <Button onClick={()=>{this.music("next")}}>NEXT</Button>
                 <Button onClick={()=>{this.music("prev")}}>PREV</Button>
                 <Typography>
