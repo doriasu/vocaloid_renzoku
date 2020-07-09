@@ -1,6 +1,7 @@
 import React from 'react';
 import {AppBar, Button, Toolbar, Typography} from "@material-ui/core";
 import axios from "axios"
+import {TwitterShareButton,TwitterIcon} from "react-share";
 interface Inico{
     url:string;
     id:string;
@@ -37,6 +38,7 @@ class App extends React.Component<Inico_prop,Inico>{
                 if(e.data.eventName=="playerStatusChange"){
                     if(e.data.data.playerStatus==4){
                         this.music_index++;
+                        this.music_index%=100;
                         this.ch_music();
                         setTimeout(()=>{if(this.handler!==null) {
                             this.post_msg(this.handler);
@@ -82,7 +84,7 @@ class App extends React.Component<Inico_prop,Inico>{
                     </AppBar>
                 </header>
 
-                <iframe src={this.state.url} id="nicoplayer" ref={(e: HTMLIFrameElement) => {
+                <iframe src={this.state.url} id="nicoplayer" allowFullScreen ref={(e: HTMLIFrameElement) => {
                     this.handler = e
                 }}>hello
                 </iframe>
@@ -90,6 +92,9 @@ class App extends React.Component<Inico_prop,Inico>{
                 <div>{this.music_index + 1}位の楽曲</div>
                 <div>{this.state.rank_title[this.music_index]}</div>
                 </Typography>
+                <TwitterShareButton title={this.state.rank_title[this.music_index]+" #"+this.state.url.substr(33,10)+" #ニコニコ動画"} url={"https://nico.ms/"+this.state.url.substr(33,11)+'ref=twitter_ss'}>
+                    <TwitterIcon size={32} round />
+                </TwitterShareButton>
             </div>
 
         );
