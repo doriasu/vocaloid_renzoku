@@ -1,5 +1,5 @@
 import React from 'react';
-import {AppBar, Button, Checkbox, FormControlLabel, Toolbar, Typography} from "@material-ui/core";
+import {AppBar, Button, Checkbox, FormControlLabel, TextField, Toolbar, Typography} from "@material-ui/core";
 import axios from "axios"
 import {TwitterShareButton,TwitterIcon} from "react-share";
 interface Inico{
@@ -8,6 +8,7 @@ interface Inico{
     rank_url:string[];
     rank_title:string[];
     random_check:boolean;
+    listener_id:string;
 }
 interface Inico_prop {
 
@@ -15,7 +16,7 @@ interface Inico_prop {
 class App extends React.Component<Inico_prop,Inico>{
     constructor(props:Inico_prop) {
         super(props);
-        this.state={url:"",id:"niconico",rank_url:[],rank_title:[],random_check:false}
+        this.state={url:"",id:"niconico",rank_url:[],rank_title:[],random_check:false,listener_id:''}
         this.bind();
         this.get_ranking();
 
@@ -31,6 +32,10 @@ class App extends React.Component<Inico_prop,Inico>{
     async get_ranking(){
         const res=await axios.get("https://niconico-vocaloid-ranking.herokuapp.com/ranking_api/?ranking");
         this.setState({rank_url:res.data.url,rank_title:res.data.title,url:res.data.url[0]});
+    }
+    async post_favorite(){
+        const url = "https://niconico-vocaloid-ranking.herokuapp.com/ranking_api/?datapost"
+        const res = await axios.post(url, {user_id:this.state.listener_id, music_title:this.state.rank_title[this.music_index], music_url:this.state.rank_url[this.music_index], created_at:new Date().toLocaleString()})
     }
 
 
@@ -88,7 +93,13 @@ class App extends React.Component<Inico_prop,Inico>{
         }
         this.setState((prevState)=>({url:this.state.rank_url[this.music_index]}));
     }
+
     render() {
+        const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
+            this.setState({
+                listener_id:e.target.value,
+            })
+        }
         return (
             <div className="App">
                 <header className="App-header">
@@ -122,6 +133,10 @@ class App extends React.Component<Inico_prop,Inico>{
                 <TwitterShareButton title={this.state.rank_title[this.music_index]+" #"+this.state.url.substr(33,10)+" #ニコニコ動画"} url={"https://nico.ms/"+this.state.url.substr(33,11)+'ref=twitter_ss'}>
                     <TwitterIcon size={32} round />
                 </TwitterShareButton>
+                <Button onClick={()=>this.post_favorite()}>これすき！</Button>
+                <form noValidate autoComplete="off">
+                    <TextField id="standard-basic" label="ID" value={this.state.listener_id} onChange={handleChange} />
+                </form>
             </div>
 
         );
